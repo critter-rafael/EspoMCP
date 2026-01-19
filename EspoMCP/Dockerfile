@@ -10,14 +10,13 @@ RUN npm ci
 COPY src/ ./src/
 COPY tsconfig.json ./
 
-# 3. BUILD TypeScript (cria build/)
+# 3. BUILD TypeScript (cria build/ DENTRO da imagem)
 RUN npm run build
 
-# 4. Remove dev deps, instala só prod
-RUN npm ci --only=production && npm cache clean --force
+# 4. Remove dev deps, instala só prod (build/ JÁ existe aqui!)
+RUN npm prune --production && npm ci --only=production && npm cache clean --force
 
-# 5. Copia build/ (agora existe!)
-COPY build/ ./build/
+# 5. ❌ REMOVIDO: COPY build/ (desnecessário - já está em /app/build/)
 
 # Logs e user security (inalterado)
 RUN mkdir -p logs
