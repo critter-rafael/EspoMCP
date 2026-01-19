@@ -1,46 +1,13 @@
-# Node modules
-node_modules/
-npm-debug.log*
-
-# Source files (only built files should be included)
-src/
-tests/
-
-# Development files
-.env
-.env.local
-.env.development
-.env.test
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Git
-.git/
-.gitignore
-
-# Documentation (except README)
-docs/
-*.md
-!README.md
-
-# Logs
-logs/
-*.log
-
-# Coverage reports
-coverage/
-
-# Build cache
-.cache/
-
-# Temporary files
-tmp/
-temp/
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+RUN npm ci --only=production && npm cache clean --force
+RUN mkdir -p logs && addgroup -g 1001 nodejs && adduser -S espocrm -u 1001
+RUN chown -R espocrm:nodejs /app
+USER espocrm
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["node", "build/index.js"]
